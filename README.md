@@ -5,12 +5,12 @@
 
 ## Condictions:
     1.Maximum of the siez of the box is 50,50,58(cm)
-    2.n products should by pack in one bag, g bags should by pack in one box
-    3.n belong to{3,6,8,12}
-    4.Try to pack as many as product in a box
-    5.Try to use as less as prokets in a box
+    2.n products should be packed in one pokect, g pokects should be packed in one box
+    3.n belong to set{3,6,8,12}
+    4.Try to pack as many as products in one box
+    5.Try to use as less as pokects in one box
 
 ## Output:
-    1.the maximum of products you pack
-    2.the size of the box you use
-    3.the count of prokets you use
+    1.The maximum number of the products you can pack
+    2.The size of the box you need
+    3.The count of pokects you need

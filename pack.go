@@ -82,7 +82,6 @@ func main() {
 
 		if n%12 == 0 {
 
-			//pc12 = n / 12
 			zz, xx, yy := MinimumFirst(x1, y1, z1)
 
 			i = 1
@@ -114,9 +113,9 @@ func main() {
 				pc12.SolutionType = 12
 				pc12.PackageCount = pc12.ProductCount / 12
 				solutions = append(solutions, &pc12)
-				fmt.Println("=============================== Pack 12 in one ===")
+				fmt.Println("=============================== Pack 12 in one pokect ===")
 				fmt.Printf("Product count  : %d\n", pc12.ProductCount)
-				fmt.Printf("Package count  : %d\n", pc12.PackageCount)
+				fmt.Printf("Pokects count  : %d\n", pc12.PackageCount)
 				fmt.Printf("Box Size(cm)   : %d %d %d\n", x/10, y/10, z/10)
 				fmt.Printf("Box Volume(m^2): %f\n", float64(x)/1000*float64(y)/1000*float64(z)/1000)
 			}
@@ -154,9 +153,9 @@ func main() {
 				pc8.Height = z / 10
 				pc8.PackageCount = pc8.ProductCount / uint64(8)
 				solutions = append(solutions, &pc8)
-				fmt.Println("=============================== Pack 8 in one ===")
+				fmt.Println("=============================== Pack 8 in one pokect ===")
 				fmt.Printf("Product count  : %d\n", pc8.ProductCount)
-				fmt.Printf("Package count  : %d \n", pc8.PackageCount)
+				fmt.Printf("Pokects count  : %d \n", pc8.PackageCount)
 				fmt.Printf("Box Size(cm)   : %d %d %d\n", x/10, y/10, z/10)
 				fmt.Printf("Box Volume(m^2): %f\n", float64(x)/1000*float64(y)/1000*float64(z)/1000)
 			}
@@ -194,18 +193,18 @@ func main() {
 				pc6.Height = z / 10
 				pc6.PackageCount = pc6.ProductCount / 6
 				solutions = append(solutions, &pc6)
-				fmt.Println("=============================== Pack 6 in one ===")
+				fmt.Println("=============================== Pack 6 in one pokect ===")
 				fmt.Printf("Product count  : %d\n", pc6.ProductCount)
-				fmt.Printf("Package count  : %d \n", pc6.PackageCount)
+				fmt.Printf("Pokects count  : %d \n", pc6.PackageCount)
 				fmt.Printf("Box Size(cm)   : %d %d %d\n", x/10, y/10, z/10)
 				fmt.Printf("Box Volume(m^2): %f\n", float64(x)/1000*float64(y)/1000*float64(z)/1000)
 			}
 		}
-		//fmt.Println("111", n)
+
 		if n%3 == 0 {
-			//fmt.Println("222")
+
 			zz, xx, yy := MinimumFirst(x1, y1, z1)
-			//fmt.Println("333", zz)
+
 			i = 1
 			for i*xx <= LENGTH {
 
@@ -226,11 +225,8 @@ func main() {
 				z = i * zz * 3
 				i += 1
 			}
-			//fmt.Println("444", zz)
 
 			pc3.ProductCount = x * y * z / (x1 * y1 * z1)
-			//fmt.Println("555", x * y * z)
-			//fmt.Println("666",(x1 * y1 * z1))
 			if pc3.ProductCount != 0 {
 				pc3.SolutionType = 3
 				pc3.Length = x / 10
@@ -238,9 +234,9 @@ func main() {
 				pc3.Height = z / 10
 				pc3.PackageCount = pc3.ProductCount / 3
 				solutions = append(solutions, &pc3)
-				fmt.Println("=============================== Pack 3 in one ===")
+				fmt.Println("=============================== Pack 3 in one pokect ===")
 				fmt.Printf("Product Count  : %d\n", pc3.ProductCount)
-				fmt.Printf("Packages count : %d \n", pc3.PackageCount)
+				fmt.Printf("Pokects count  : %d \n", pc3.PackageCount)
 				fmt.Printf("Box Size(cm)   : %d %d %d\n", x/10, y/10, z/10)
 				fmt.Printf("Box Volume(m^2): %f\n", float64(x)/1000*float64(y)/1000*float64(z)/1000)
 			}
@@ -278,12 +274,12 @@ func main() {
 			}
 
 			// 5. give the solutions
-			fmt.Println("=============================== Best Solution ===>")
+			fmt.Println("=============================== Best Solution ===========>")
 			for _, s := range solutions {
 				if s.ProductCount != 0 {
-					fmt.Printf("Solution Type  : %d products in one package\n", s.SolutionType)
+					fmt.Printf("Solution Type  : %d products in one pokects\n", s.SolutionType)
 					fmt.Printf("Product Count  : %d\n", s.ProductCount)
-					fmt.Printf("Packages count : %d \n", s.PackageCount)
+					fmt.Printf("Pokects count  : %d \n", s.PackageCount)
 					fmt.Printf("Box Size(cm)   : %d %d %d\n", s.Length, s.Weight, s.Height)
 					fmt.Printf("Box Volume(m^2): %f\n", float64(s.Length)/100*float64(s.Weight)/100*float64(s.Height)/100)
 				}
@@ -292,7 +288,7 @@ func main() {
 		} else if n > 0 {
 			n -= 1
 		} else {
-			fmt.Println("no solution.")
+			fmt.Println("No solution.")
 			return
 		}
 
