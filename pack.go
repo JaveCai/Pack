@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 )
 
 //define maximum size
@@ -40,13 +42,24 @@ func CheckInputSizeBeyondHalfOfMaximum(a, b, c uint64) bool {
 }
 
 func main() {
-	if len(os.Args[1:]) < 3 {
-		fmt.Printf("error :need 3 parameters\n")
+	for {
+		fmt.Println("Please enter the size of your product:")
+		input := bufio.NewScanner(os.Stdin)
+		input.Scan()
+		args := strings.Split(input.Text(), " ")
+		GetPackSolution(args)
+	}
+
+}
+
+func GetPackSolution(args []string) {
+	if len(args[:]) != 3 {
+		fmt.Printf("Please enter 3 parameters.\n")
 		return
 	}
-	x0, _ := strconv.ParseFloat(os.Args[1], 64)
-	y0, _ := strconv.ParseFloat(os.Args[2], 64)
-	z0, _ := strconv.ParseFloat(os.Args[3], 64)
+	x0, _ := strconv.ParseFloat(args[0], 64)
+	y0, _ := strconv.ParseFloat(args[1], 64)
+	z0, _ := strconv.ParseFloat(args[2], 64)
 
 	if x0 == 0 || y0 == 0 || z0 == 0 {
 		fmt.Printf("error :Input parameters should be 3 and greater than 0 : %f, %f, %f\n", x0, y0, z0)
@@ -56,7 +69,7 @@ func main() {
 	x1 := uint64(x0 * 10)
 	y1 := uint64(y0 * 10)
 	z1 := uint64(z0 * 10)
-	fmt.Printf("%dmm %dmm %dmm\n", x1, y1, z1)
+	//fmt.Printf("%dmm %dmm %dmm\n", x1, y1, z1)
 	if CheckInputSizeValid(x1, y1, z1) == false {
 		fmt.Printf("error: Input size beyond the maximum!\n")
 		return
@@ -113,11 +126,13 @@ func main() {
 				pc12.SolutionType = 12
 				pc12.PackageCount = pc12.ProductCount / 12
 				solutions = append(solutions, &pc12)
-				fmt.Println("=============================== Pack 12 in one pokect ===")
-				fmt.Printf("Product count  : %d\n", pc12.ProductCount)
-				fmt.Printf("Pokects count  : %d\n", pc12.PackageCount)
-				fmt.Printf("Box Size(cm)   : %d %d %d\n", x/10, y/10, z/10)
-				fmt.Printf("Box Volume(m^2): %f\n", float64(x)/1000*float64(y)/1000*float64(z)/1000)
+				/*
+					fmt.Println("=============================== Pack 12 in one pokect ===")
+					fmt.Printf("Product count  : %d\n", pc12.ProductCount)
+					fmt.Printf("Pokects count  : %d\n", pc12.PackageCount)
+					fmt.Printf("Box Size(cm)   : %d %d %d\n", x/10, y/10, z/10)
+					fmt.Printf("Box Volume(m^2): %f\n", float64(x)/1000*float64(y)/1000*float64(z)/1000)
+				*/
 			}
 		}
 
@@ -153,11 +168,13 @@ func main() {
 				pc8.Height = z / 10
 				pc8.PackageCount = pc8.ProductCount / uint64(8)
 				solutions = append(solutions, &pc8)
-				fmt.Println("=============================== Pack 8 in one pokect ===")
-				fmt.Printf("Product count  : %d\n", pc8.ProductCount)
-				fmt.Printf("Pokects count  : %d \n", pc8.PackageCount)
-				fmt.Printf("Box Size(cm)   : %d %d %d\n", x/10, y/10, z/10)
-				fmt.Printf("Box Volume(m^2): %f\n", float64(x)/1000*float64(y)/1000*float64(z)/1000)
+				/*
+					fmt.Println("=============================== Pack 8 in one pokect ===")
+					fmt.Printf("Product count  : %d\n", pc8.ProductCount)
+					fmt.Printf("Pokects count  : %d \n", pc8.PackageCount)
+					fmt.Printf("Box Size(cm)   : %d %d %d\n", x/10, y/10, z/10)
+					fmt.Printf("Box Volume(m^2): %f\n", float64(x)/1000*float64(y)/1000*float64(z)/1000)
+				*/
 			}
 		}
 
@@ -193,11 +210,13 @@ func main() {
 				pc6.Height = z / 10
 				pc6.PackageCount = pc6.ProductCount / 6
 				solutions = append(solutions, &pc6)
-				fmt.Println("=============================== Pack 6 in one pokect ===")
-				fmt.Printf("Product count  : %d\n", pc6.ProductCount)
-				fmt.Printf("Pokects count  : %d \n", pc6.PackageCount)
-				fmt.Printf("Box Size(cm)   : %d %d %d\n", x/10, y/10, z/10)
-				fmt.Printf("Box Volume(m^2): %f\n", float64(x)/1000*float64(y)/1000*float64(z)/1000)
+				/*
+					fmt.Println("=============================== Pack 6 in one pokect ===")
+					fmt.Printf("Product count  : %d\n", pc6.ProductCount)
+					fmt.Printf("Pokects count  : %d \n", pc6.PackageCount)
+					fmt.Printf("Box Size(cm)   : %d %d %d\n", x/10, y/10, z/10)
+					fmt.Printf("Box Volume(m^2): %f\n", float64(x)/1000*float64(y)/1000*float64(z)/1000)
+				*/
 			}
 		}
 
@@ -234,11 +253,13 @@ func main() {
 				pc3.Height = z / 10
 				pc3.PackageCount = pc3.ProductCount / 3
 				solutions = append(solutions, &pc3)
-				fmt.Println("=============================== Pack 3 in one pokect ===")
-				fmt.Printf("Product Count  : %d\n", pc3.ProductCount)
-				fmt.Printf("Pokects count  : %d \n", pc3.PackageCount)
-				fmt.Printf("Box Size(cm)   : %d %d %d\n", x/10, y/10, z/10)
-				fmt.Printf("Box Volume(m^2): %f\n", float64(x)/1000*float64(y)/1000*float64(z)/1000)
+				/*
+					fmt.Println("=============================== Pack 3 in one pokect ===")
+					fmt.Printf("Product Count  : %d\n", pc3.ProductCount)
+					fmt.Printf("Pokects count  : %d \n", pc3.PackageCount)
+					fmt.Printf("Box Size(cm)   : %d %d %d\n", x/10, y/10, z/10)
+					fmt.Printf("Box Volume(m^2): %f\n", float64(x)/1000*float64(y)/1000*float64(z)/1000)
+				*/
 			}
 		}
 
@@ -274,7 +295,7 @@ func main() {
 			}
 
 			// 5. give the solutions
-			fmt.Println("=============================== Best Solution ===========>")
+			//fmt.Println("=============================== Best Solution ===========>")
 			for _, s := range solutions {
 				if s.ProductCount != 0 {
 					fmt.Printf("Solution Type  : %d products in one pokects\n", s.SolutionType)
@@ -284,6 +305,7 @@ func main() {
 					fmt.Printf("Box Volume(m^2): %f\n", float64(s.Length)/100*float64(s.Weight)/100*float64(s.Height)/100)
 				}
 			}
+			fmt.Println("")
 			break
 		} else if n > 0 {
 			n -= 1
@@ -293,7 +315,6 @@ func main() {
 		}
 
 	}
-
 }
 
 func MinimumFirst(x, y, z uint64) (uint64, uint64, uint64) {
