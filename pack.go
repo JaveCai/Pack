@@ -8,34 +8,66 @@ import (
 	"strings"
 )
 
-//define maximum size
+//define maximum size（mm）
 const (
-	LENGTH uint64 = 500
+	LENGTH uint64 = 580
 	WIDTH  uint64 = 500
-	HEIGTH uint64 = 580
+	HEIGTH uint64 = 500
+)
+
+const (
+	LENGTH_IDX uint8 = 1
+	WIDTH_IDX  uint8 = 2
+	HEIGTH_IDX uint8 = 3
 )
 
 type ProductPack struct {
 	SolutionType uint64
 	ProductCount uint64
 	PackageCount uint64
+
+	//Package size
+	PackLength uint64
+	PackWeigth uint64
+	PackHetght uint64
+
 	//Box Size
-	Length uint64
-	Weight uint64
-	Height uint64
+	BoxLength uint64
+	BoxWeight uint64
+	BoxHeight uint64
 }
 
-func CheckInputSizeValid(a, b, c uint64) bool {
-	x, y, z := MaximumFirst(a, b, c)
-	if x > HEIGTH || y > LENGTH || z > LENGTH {
+/*
+function SelectPackageSide: Select the longest side as the Length of the package
+*/
+func (p *ProductPack) SelectPackageSide(l, w, h uint64) {
+	switch GetMaximumIndex(l, w, h) {
+	case LENGTH_IDX:
+		p.PackLength = l
+		p.PackWeigth = w
+		p.PackHetght = h
+	case WIDTH_IDX:
+		p.PackLength = w
+		p.PackWeigth = l
+		p.PackHetght = h
+	case HEIGTH_IDX:
+		p.PackLength = h
+		p.PackWeigth = l
+		p.PackHetght = w
+	}
+}
+
+func CheckInputSizeValid(l, w, h uint64) bool {
+
+	if l > LENGTH || w > WIDTH || h > HEIGTH {
 		return false
 	}
 	return true
 }
 
-func CheckInputSizeBeyondHalfOfMaximum(a, b, c uint64) bool {
-	x, y, z := MaximumFirst(a, b, c)
-	if x > HEIGTH/2 && y > LENGTH/2 && z > LENGTH/2 {
+func CheckInputSizeBeyondHalfOfMaximum(l, w, h uint64) bool {
+
+	if l > LENGTH/2 || w > WIDTH/2 || h > HEIGTH/2 {
 		return true
 	}
 	return false
@@ -57,6 +89,8 @@ func GetPackSolution(args []string) {
 		fmt.Printf("Please enter 3 parameters.\n")
 		return
 	}
+
+	//convert data type from string to float64
 	x0, _ := strconv.ParseFloat(args[0], 64)
 	y0, _ := strconv.ParseFloat(args[1], 64)
 	z0, _ := strconv.ParseFloat(args[2], 64)
@@ -69,7 +103,8 @@ func GetPackSolution(args []string) {
 	x1 := uint64(x0 * 10)
 	y1 := uint64(y0 * 10)
 	z1 := uint64(z0 * 10)
-	//fmt.Printf("%dmm %dmm %dmm\n", x1, y1, z1)
+
+	fmt.Printf("%dmm %dmm %dmm\n", x1, y1, z1)
 	if CheckInputSizeValid(x1, y1, z1) == false {
 		fmt.Printf("error: Input size beyond the maximum!\n")
 		return
@@ -89,177 +124,207 @@ func GetPackSolution(args []string) {
 	n := LENGTH * WIDTH * HEIGTH / (x1 * y1 * z1)
 
 	solutions := make([]*ProductPack, 0)
-	var pc3, pc6, pc8, pc12 ProductPack = ProductPack{}, ProductPack{}, ProductPack{}, ProductPack{}
+	var pc3, pc6, pc8, pc12 ProductPack = ProductPack{3, 0, 0, 0, 0, 0, 0, 0, 0},
+		ProductPack{6, 0, 0, 0, 0, 0, 0, 0, 0},
+		ProductPack{8, 0, 0, 0, 0, 0, 0, 0, 0},
+		ProductPack{12, 0, 0, 0, 0, 0, 0, 0, 0}
 
 	for {
 
+		/*
+			Algorithm:
+			1.Find out the longest/shortest side of product and pack them to the shape most familiar to a cube
+			2.Find out the longest side of the package, which will match to the longest side of the box(LENGTH)
+			3.The other two sides of the box is equal to each other, therefore we don't care the other two side of package
+
+			advance:
+			1.minimum(580 - x.PackLength *n)
+		*/
+
 		if n%12 == 0 {
 
-			zz, xx, yy := MinimumFirst(x1, y1, z1)
+			switch GetMinimumIndex(x1, y1, z1) {
+			case LENGTH_IDX:
+				pc12.SelectPackageSide(x1*3, y1*2, z1*2)
+			case WIDTH_IDX:
+				pc12.SelectPackageSide(x1*2, y1*3, z1*2)
+			case HEIGTH_IDX:
+				pc12.SelectPackageSide(x1*2, y1*2, z1*3)
+			}
 
 			i = 1
-			for i*xx*2 <= LENGTH {
+			for i*pc12.PackHetght <= HEIGTH {
 
-				x = i * xx * 2
+				x = i * pc12.PackHetght
 				i += 1
 			}
 
 			i = 1
-			for i*yy*2 <= WIDTH {
+			for i*pc12.PackWeigth <= WIDTH {
 
-				y = i * yy * 2
+				y = i * pc12.BoxWeight
 				i += 1
 			}
 
 			i = 1
-			for i*zz*3 <= HEIGTH {
+			for i*pc12.PackLength <= LENGTH {
 
-				z = i * zz * 3
+				z = i * pc12.PackLength
 				i += 1
 			}
 
 			pc12.ProductCount = x * y * z / (x1 * y1 * z1)
 			if pc12.ProductCount != 0 {
-				pc12.Length = x / 10
-				pc12.Weight = y / 10
-				pc12.Height = z / 10
+				pc12.BoxLength = x / 10
+				pc12.BoxWeight = y / 10
+				pc12.BoxHeight = z / 10
 				pc12.SolutionType = 12
 				pc12.PackageCount = pc12.ProductCount / 12
 				solutions = append(solutions, &pc12)
-				/*
-					fmt.Println("=============================== Pack 12 in one pokect ===")
-					fmt.Printf("Product count  : %d\n", pc12.ProductCount)
-					fmt.Printf("Pokects count  : %d\n", pc12.PackageCount)
-					fmt.Printf("Box Size(cm)   : %d %d %d\n", x/10, y/10, z/10)
-					fmt.Printf("Box Volume(m^2): %f\n", float64(x)/1000*float64(y)/1000*float64(z)/1000)
-				*/
+
+				fmt.Println("=============================== Pack 12 in one pokect ===")
+				fmt.Printf("Product count  : %d\n", pc12.ProductCount)
+				fmt.Printf("Pokects count  : %d\n", pc12.PackageCount)
+				fmt.Printf("Box Size(cm)   : %d %d %d\n", x/10, y/10, z/10)
+				fmt.Printf("Box Volume(m^2): %.3f\n", float64(x)/1000*float64(y)/1000*float64(z)/1000)
+
 			}
 		}
 
 		if n%8 == 0 {
-			zz, xx, yy := MaximumFirst(x1, y1, z1)
-
+			pc8.SelectPackageSide(x1*2, y1*2, z1*2)
 			i = 1
-			for i*xx*2 <= LENGTH {
-
-				x = i * xx * 2
+			for i*pc8.PackLength <= LENGTH {
+				x = i * pc8.PackLength
 				i += 1
 			}
 
 			i = 1
-			for i*yy*2 <= WIDTH {
-
-				y = i * yy * 2
+			for i*pc8.PackWeigth <= WIDTH {
+				y = i * pc8.PackWeigth
 				i += 1
 			}
 
 			i = 1
-			for i*zz*2 <= HEIGTH {
-
-				z = i * zz * 2
+			for i*pc8.PackHetght <= HEIGTH {
+				z = i * pc8.PackHetght
 				i += 1
 			}
 
 			pc8.ProductCount = x * y * z / (x1 * y1 * z1)
 			if pc8.ProductCount != 0 {
 				pc8.SolutionType = 8
-				pc8.Length = x / 10
-				pc8.Weight = y / 10
-				pc8.Height = z / 10
+				pc8.BoxLength = x / 10
+				pc8.BoxWeight = y / 10
+				pc8.BoxHeight = z / 10
 				pc8.PackageCount = pc8.ProductCount / uint64(8)
 				solutions = append(solutions, &pc8)
-				/*
-					fmt.Println("=============================== Pack 8 in one pokect ===")
-					fmt.Printf("Product count  : %d\n", pc8.ProductCount)
-					fmt.Printf("Pokects count  : %d \n", pc8.PackageCount)
-					fmt.Printf("Box Size(cm)   : %d %d %d\n", x/10, y/10, z/10)
-					fmt.Printf("Box Volume(m^2): %f\n", float64(x)/1000*float64(y)/1000*float64(z)/1000)
-				*/
+
+				fmt.Println("=============================== Pack 8 in one pokect ===")
+				fmt.Printf("Product count  : %d\n", pc8.ProductCount)
+				fmt.Printf("Pokects count  : %d \n", pc8.PackageCount)
+				fmt.Printf("Box Size(cm)   : %d %d %d\n", x/10, y/10, z/10)
+				fmt.Printf("Box Volume(m^2): %.3f\n", float64(x)/1000*float64(y)/1000*float64(z)/1000)
+
 			}
 		}
 
 		if n%6 == 0 {
-			zz, xx, yy := MinimumFirst(x1, y1, z1)
+			switch GetMinimumIndex(x1, y1, z1) {
+			case LENGTH_IDX:
+				pc6.SelectPackageSide(x1*3, y1*2, z1)
+			case WIDTH_IDX:
+				pc6.SelectPackageSide(x1*2, y1*3, z1)
+			case HEIGTH_IDX:
+				pc6.SelectPackageSide(x1, y1*2, z1*3)
+			}
 
 			i = 1
-			for i*xx <= LENGTH {
+			for i*pc6.PackLength <= LENGTH {
 
-				x = i * xx
+				x = i * pc6.PackLength
 				i += 1
 			}
 
 			i = 1
-			for i*yy*2 <= WIDTH {
+			for i*pc6.PackWeigth <= WIDTH {
 
-				y = i * yy * 2
+				y = i * pc6.PackWeigth
 				i += 1
 			}
 
 			i = 1
-			for i*zz*3 <= HEIGTH {
+			for i*pc6.PackHetght <= HEIGTH {
 
-				z = i * zz * 3
+				z = i * pc6.PackHetght
 				i += 1
 			}
 
 			pc6.ProductCount = x * y * z / (x1 * y1 * z1)
 			if pc6.ProductCount != 0 {
 				pc6.SolutionType = 6
-				pc6.Length = x / 10
-				pc6.Weight = y / 10
-				pc6.Height = z / 10
+				pc6.BoxLength = x / 10
+				pc6.BoxWeight = y / 10
+				pc6.BoxHeight = z / 10
 				pc6.PackageCount = pc6.ProductCount / 6
 				solutions = append(solutions, &pc6)
-				/*
-					fmt.Println("=============================== Pack 6 in one pokect ===")
-					fmt.Printf("Product count  : %d\n", pc6.ProductCount)
-					fmt.Printf("Pokects count  : %d \n", pc6.PackageCount)
-					fmt.Printf("Box Size(cm)   : %d %d %d\n", x/10, y/10, z/10)
-					fmt.Printf("Box Volume(m^2): %f\n", float64(x)/1000*float64(y)/1000*float64(z)/1000)
-				*/
+
+				fmt.Println("=============================== Pack 6 in one pokect ===")
+				fmt.Printf("Product count  : %d\n", pc6.ProductCount)
+				fmt.Printf("Pokects count  : %d \n", pc6.PackageCount)
+				fmt.Printf("Box Size(cm)   : %d %d %d\n", x/10, y/10, z/10)
+				fmt.Printf("Box Volume(m^2): %.3f\n", float64(x)/1000*float64(y)/1000*float64(z)/1000)
+
 			}
 		}
 
 		if n%3 == 0 {
 
-			zz, xx, yy := MinimumFirst(x1, y1, z1)
+			switch GetMinimumIndex(x1, y1, z1) {
+			case LENGTH_IDX:
+				pc3.SelectPackageSide(x1*3, y1, z1)
+			case WIDTH_IDX:
+				pc3.SelectPackageSide(x1, y1*3, z1)
+			case HEIGTH_IDX:
+				pc3.SelectPackageSide(x1, y1, z1*3)
+			}
 
 			i = 1
-			for i*xx <= LENGTH {
+			for i*pc3.PackLength <= LENGTH {
 
-				x = i * xx
+				x = i * pc3.PackLength
 				i += 1
 			}
 
 			i = 1
-			for i*yy <= WIDTH {
+			for i*pc3.PackWeigth <= WIDTH {
 
-				y = i * yy
+				y = i * pc3.PackWeigth
 				i += 1
 			}
 
 			i = 1
-			for i*zz*3 <= HEIGTH {
+			for i*pc3.PackHetght <= HEIGTH {
 
-				z = i * zz * 3
+				z = i * pc3.PackHetght
 				i += 1
 			}
 
 			pc3.ProductCount = x * y * z / (x1 * y1 * z1)
 			if pc3.ProductCount != 0 {
 				pc3.SolutionType = 3
-				pc3.Length = x / 10
-				pc3.Weight = y / 10
-				pc3.Height = z / 10
+				pc3.BoxLength = x / 10
+				pc3.BoxWeight = y / 10
+				pc3.BoxHeight = z / 10
 				pc3.PackageCount = pc3.ProductCount / 3
 				solutions = append(solutions, &pc3)
-				/*
-					fmt.Println("=============================== Pack 3 in one pokect ===")
-					fmt.Printf("Product Count  : %d\n", pc3.ProductCount)
-					fmt.Printf("Pokects count  : %d \n", pc3.PackageCount)
-					fmt.Printf("Box Size(cm)   : %d %d %d\n", x/10, y/10, z/10)
-					fmt.Printf("Box Volume(m^2): %f\n", float64(x)/1000*float64(y)/1000*float64(z)/1000)
-				*/
+
+				fmt.Println("=============================== Pack 3 in one pokect ===")
+				fmt.Printf("Product Count  : %d\n", pc3.ProductCount)
+				fmt.Printf("Pokects count  : %d \n", pc3.PackageCount)
+				fmt.Printf("Box Size(cm)   : %d %d %d\n", x/10, y/10, z/10)
+				fmt.Printf("Box Volume(m^2): %.3f\n", float64(x)/1000*float64(y)/1000*float64(z)/1000)
+
 			}
 		}
 
@@ -295,14 +360,14 @@ func GetPackSolution(args []string) {
 			}
 
 			// 5. give the solutions
-			//fmt.Println("=============================== Best Solution ===========>")
+			fmt.Println("=============================== Best Solution ===========>")
 			for _, s := range solutions {
 				if s.ProductCount != 0 {
 					fmt.Printf("Solution Type  : %d products in one pokects\n", s.SolutionType)
 					fmt.Printf("Product Count  : %d\n", s.ProductCount)
 					fmt.Printf("Pokects count  : %d \n", s.PackageCount)
-					fmt.Printf("Box Size(cm)   : %d %d %d\n", s.Length, s.Weight, s.Height)
-					fmt.Printf("Box Volume(m^2): %f\n", float64(s.Length)/100*float64(s.Weight)/100*float64(s.Height)/100)
+					fmt.Printf("Box Size(cm)   : %d %d %d\n", s.BoxLength, s.BoxWeight, s.BoxHeight)
+					fmt.Printf("Box Volume(m^2): %.3f\n", float64(s.BoxLength)/100*float64(s.BoxWeight)/100*float64(s.BoxHeight)/100)
 				}
 			}
 			fmt.Println("")
@@ -317,34 +382,56 @@ func GetPackSolution(args []string) {
 	}
 }
 
-func MinimumFirst(x, y, z uint64) (uint64, uint64, uint64) {
+func GetMinimumIndex(x, y, z uint64) (uint8, uint8, uint8) {
 	if x <= y && x <= z {
-		return x, y, z
+		if y < z {
+			return 1, 2, 3
+		} else {
+			return 1, 3, 2
+		}
 
 	}
-
 	if y <= z && y <= x {
-		return y, x, z
+		if z < x {
+			return 2, 1, 3
+		} else {
+			return 2, 3, 1
+		}
 	}
 
 	if z <= x && z <= y {
-		return z, x, y
+		if x < y {
+			return 3, 1, 2
+		} else {
+			return 3, 2, 1
+		}
 	}
-	return x, y, z
+	return 1, 2, 3
 }
 
-func MaximumFirst(x, y, z uint64) (uint64, uint64, uint64) {
+func GetMaximumIndex(x, y, z uint64) (uint8, uint8, uint8) {
 	if x >= y && x >= z {
-		return x, y, z
+		if y > z {
+			return 1, 2, 3
+		} else {
+			return 1, 3, 2
+		}
 
 	}
-
 	if y >= z && y >= x {
-		return y, x, z
+		if z > x {
+			return 2, 3, 1
+		} else {
+			return 2, 1, 3
+		}
 	}
 
 	if z >= x && z >= y {
-		return z, x, y
+		if x > y {
+			return 3, 1, 2
+		} else {
+			return 3, 2, 1
+		}
 	}
-	return x, y, z
+	return 1, 2, 3
 }
