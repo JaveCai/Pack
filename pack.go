@@ -37,26 +37,6 @@ type ProductPack struct {
 	BoxHeight uint64
 }
 
-/*
-function SelectPackageSide: Select the longest side as the Length of the package
-*/
-func (p *ProductPack) SelectPackageSide(l, w, h uint64) {
-	switch GetMaximumIndex(l, w, h) {
-	case LENGTH_IDX:
-		p.PackLength = l
-		p.PackWeigth = w
-		p.PackHetght = h
-	case WIDTH_IDX:
-		p.PackLength = w
-		p.PackWeigth = l
-		p.PackHetght = h
-	case HEIGTH_IDX:
-		p.PackLength = h
-		p.PackWeigth = l
-		p.PackHetght = w
-	}
-}
-
 func CheckInputSizeValid(l, w, h uint64) bool {
 
 	if l > LENGTH || w > WIDTH || h > HEIGTH {
@@ -82,6 +62,49 @@ func main() {
 		GetPackSolution(args)
 	}
 
+}
+
+/*
+	PACKCOUNT: {12,8,6,3}
+
+	Algorithm v1.0: 
+	n: the Maximum product count theoretically.
+	1.get the n wich can be div by 3,6,8,12
+	2.Find out the longest/shortest side of product and pack them to the shape most familiar to a cube
+	3.Find out the longest side of the package, which will match to the longest side of the box(LENGTH)
+	4.The other two sides of the box is equal to each other, therefore we don't care the other two side of package
+
+	Algorithm v2.0:
+	0.input: in[3]={x1,y1,z1} --> type Sides [3]uint64
+	1.get the shortest side index of in[3]: idx_in_short -->  func(pbs *BoxSides) GetShortestSideIndex()
+	2.get the max < 580: MaxBoxSide58[3]={X58,Y58,Z58} -->  func(pbs *BoxSides) GetMaxBoxSides()
+	3.get the longest side index of MaxBoxSide58: idx58L, and the rest: idx50W,idx50H -->func(pbs *BoxSides) GetMaxBoxSideIndex()
+	4.get the max < 500: MaxBoxSide50[3]={X50,Y50,Z50}
+	5.get the MaxBoxSide[3]={MaxBoxSide58[idx58L],MaxBoxSide58[idx50W],MaxBoxSide58[idx50H]}
+	6.Vol_MaxBoxSide/Vol_in % PACKCOUNT == 0? output : step 7 -->func(pbs *BoxSides) GetMaxBoxVolumn()
+	7.MaxBoxSide[?] -= in[idx_in_short], goto step 7	
+	  switch idx_in_short
+		  case idx58L: MaxBoxSide[0] -= in[idx_in_short]
+		  case idx50W: MaxBoxSide[1] -= in[idx_in_short]
+		  case idx50H: MaxBoxSide[2] -= in[idx_in_short]
+*/
+
+type Sides [3]uint64
+
+func(ps *Sides) GetShortestSideIndex() uint8 {
+
+}
+
+func(ps *Sides) GetLongestSideIndex()uint8{
+	
+}
+
+func(ps *Sides) GetMaxSides(l,w,h, max uint64){
+	
+}
+
+func(ps *Sides) GetVolumn()uint64{
+	return ps[0]*ps[1]*ps[2]
 }
 
 func GetPackSolution(args []string) {
@@ -114,13 +137,15 @@ func GetPackSolution(args []string) {
 		fmt.Printf("The size of product beyond the half maximum, you can only pack one product in one box!\n")
 		return
 	}
-
+	var in BoxSides = {x1,y1,z1}
+	in.GetShortestSideIndex
 	var x, y, z uint64 = 0, 0, 0
 	var i uint64 = 0
 
 	var maxProductCount uint64 = 0
 	var minPackageCount uint64 = 0xffff
 
+	// Get the Maximum product count theoretically.
 	n := LENGTH * WIDTH * HEIGTH / (x1 * y1 * z1)
 
 	solutions := make([]*ProductPack, 0)
@@ -129,18 +154,10 @@ func GetPackSolution(args []string) {
 		ProductPack{8, 0, 0, 0, 0, 0, 0, 0, 0},
 		ProductPack{12, 0, 0, 0, 0, 0, 0, 0, 0}
 
-	for {
+	//for {
 
+		
 		/*
-			Algorithm:
-			1.Find out the longest/shortest side of product and pack them to the shape most familiar to a cube
-			2.Find out the longest side of the package, which will match to the longest side of the box(LENGTH)
-			3.The other two sides of the box is equal to each other, therefore we don't care the other two side of package
-
-			advance:
-			1.minimum(580 - x.PackLength *n)
-		*/
-
 		if n%12 == 0 {
 
 			switch GetMinimumIndex(x1, y1, z1) {
@@ -379,7 +396,7 @@ func GetPackSolution(args []string) {
 			return
 		}
 
-	}
+	}*/
 }
 
 func GetMinimumIndex(x, y, z uint64) (uint8, uint8, uint8) {
@@ -435,3 +452,26 @@ func GetMaximumIndex(x, y, z uint64) (uint8, uint8, uint8) {
 	}
 	return 1, 2, 3
 }
+
+
+/*
+function SelectPackageSide: Select the longest side as the Length of the package
+*/
+/*
+func (p *ProductPack) SelectPackageSide(l, w, h uint64) {
+	switch GetMaximumIndex(l, w, h) {
+	case LENGTH_IDX:
+		p.PackLength = l
+		p.PackWeigth = w
+		p.PackHetght = h
+	case WIDTH_IDX:
+		p.PackLength = w
+		p.PackWeigth = l
+		p.PackHetght = h
+	case HEIGTH_IDX:
+		p.PackLength = h
+		p.PackWeigth = l
+		p.PackHetght = w
+	}
+}
+*/
