@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-//define maximum size（mm）
+//define maximum size（unit: mm)
 const (
 	LENGTH uint64 = 580
 	WIDTH  uint64 = 500
@@ -16,9 +16,9 @@ const (
 )
 
 const (
-	LENGTH_IDX uint8 = 1
-	WIDTH_IDX  uint8 = 2
-	HEIGTH_IDX uint8 = 3
+	LENGTH_IDX uint8 = 0
+	WIDTH_IDX  uint8 = 1
+	HEIGTH_IDX uint8 = 2
 )
 
 type ProductPack struct {
@@ -67,7 +67,7 @@ func main() {
 /*
 	PACKCOUNT: {12,8,6,3}
 
-	Algorithm v1.0: 
+	Algorithm v1.0:
 	n: the Maximum product count theoretically.
 	1.get the n wich can be div by 3,6,8,12
 	2.Find out the longest/shortest side of product and pack them to the shape most familiar to a cube
@@ -82,29 +82,80 @@ func main() {
 	4.get the max < 500: MaxBoxSide50[3]={X50,Y50,Z50}
 	5.get the MaxBoxSide[3]={MaxBoxSide58[idx58L],MaxBoxSide58[idx50W],MaxBoxSide58[idx50H]}
 	6.Vol_MaxBoxSide/Vol_in % PACKCOUNT == 0? output : step 7 -->func(pbs *BoxSides) GetMaxBoxVolumn()
-	7.MaxBoxSide[?] -= in[idx_in_short], goto step 7	
+	7.MaxBoxSide[?] -= in[idx_in_short], goto step 7
 	  switch idx_in_short
 		  case idx58L: MaxBoxSide[0] -= in[idx_in_short]
 		  case idx50W: MaxBoxSide[1] -= in[idx_in_short]
 		  case idx50H: MaxBoxSide[2] -= in[idx_in_short]
 */
 
-type Sides [3]uint64
+type SideLengths [3]uint64
 
-func(ps *Sides) GetShortestSideIndex() uint8 {
+func (s *SideLengths) GetShortestSideLengthIndex() uint8 {
+	if s[0] <= s[1] && s[0] <= s[2] {
+		return 0
+	}
+
+	if s[1] <= s[2] && s[1] <= s[0] {
+		return 1
+	}
+
+	if s[2] <= s[0] && s[2] <= s[1] {
+		return 2
+	}
+	return 0
+}
+
+func (s *SideLengths) GetLongestSideLengthIndex() uint8 {
+	if s[0] >= s[1] && s[0] >= s[2] {
+		return 0
+	}
+
+	if s[1] >= s[2] && s[1] >= s[0] {
+		return 1
+	}
+
+	if s[2] >= s[0] && s[2] >= s[1] {
+		return 2
+	}
+	return 0
 
 }
 
-func(ps *Sides) GetLongestSideIndex()uint8{
-	
+func (s *SideLengths) GetMaxSideLengths(L, W, H, maximum uint64) {
+
+	var i uint64 = 1
+
+	for L <= maximum {
+		i += 1
+		L = L * i
+	}
+	s[0] = L
+
+	i = 1
+	for W <= maximum {
+		i += 1
+		W = W * i
+	}
+	s[1] = W
+
+	i = 1
+	for H <= maximum {
+		i += 1
+		H = H * i
+	}
+	s[2] = H
+
 }
 
-func(ps *Sides) GetMaxSides(l,w,h, max uint64){
-	
+func (s *SideLengths) GetVolume() uint64 {
+	return s[0] * s[1] * s[2]
 }
 
-func(ps *Sides) GetVolumn()uint64{
-	return ps[0]*ps[1]*ps[2]
+func (s *SideLengths) Init(L, W, H uint64) {
+	s[0] = L
+	s[1] = W
+	s[2] = H
 }
 
 func GetPackSolution(args []string) {
@@ -137,8 +188,19 @@ func GetPackSolution(args []string) {
 		fmt.Printf("The size of product beyond the half maximum, you can only pack one product in one box!\n")
 		return
 	}
-	var in BoxSides = {x1,y1,z1}
-	in.GetShortestSideIndex
+
+	/*----------------------------------------------------------------------*/
+
+	var in SideLengths
+	in.Init(x1, y1, z1)
+	idx_in_short := in.GetShortestSideLengthIndex()
+	var MaxBoxSide58 SideLengths
+	MaxBoxSide58.Init(0, 0, 0)
+	MaxBoxSide58.GetMaxSideLengths(x1, y1, z1, 580)
+	for i, v := range MaxBoxSide58 {
+		fmt.Printf("max[%d]: %d\n", i, v)
+	}
+
 	var x, y, z uint64 = 0, 0, 0
 	var i uint64 = 0
 
@@ -156,8 +218,7 @@ func GetPackSolution(args []string) {
 
 	//for {
 
-		
-		/*
+	/*
 		if n%12 == 0 {
 
 			switch GetMinimumIndex(x1, y1, z1) {
@@ -452,7 +513,6 @@ func GetMaximumIndex(x, y, z uint64) (uint8, uint8, uint8) {
 	}
 	return 1, 2, 3
 }
-
 
 /*
 function SelectPackageSide: Select the longest side as the Length of the package
