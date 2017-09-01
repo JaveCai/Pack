@@ -81,7 +81,7 @@ func main() {
 	3.get the longest side index of MaxBoxSide58: idx58L, and the rest: idx50W,idx50H -->func(pbs *BoxSides) GetMaxBoxSideIndex()
 	4.get the max < 500: MaxBoxSide50[3]={X50,Y50,Z50}
 	5.get the MaxBoxSide[3]={MaxBoxSide58[idx58L],MaxBoxSide58[idx50W],MaxBoxSide58[idx50H]}
-	6.Vol_MaxBoxSide/Vol_in % PACKCOUNT == 0? output : step 7 -->func(pbs *BoxSides) GetMaxBoxVolumn()
+	6.Vol_MaxBoxSide/Vol_in % PACKCOUNT == 0? output : step 7 -->func(pbs *BoxSides) GetVolumn()
 	7.MaxBoxSide[?] -= in[idx_in_short], goto step 7
 	  switch idx_in_short
 		  case idx58L: MaxBoxSide[0] -= in[idx_in_short]
@@ -120,6 +120,61 @@ func (s *SideLengths) GetLongestSideLengthIndex() uint8 {
 	}
 	return 0
 
+}
+
+
+func GetMinSortIndex(x, y, z uint64) (uint8, uint8, uint8) {
+	if x <= y && x <= z {
+		if y < z {
+			return 0, 1, 2
+		} else {
+			return 0, 2, 1
+		}
+
+	}
+	if y <= z && y <= x {
+		if z < x {
+			return 1, 0, 2
+		} else {
+			return 1, 2, 0
+		}
+	}
+
+	if z <= x && z <= y {
+		if x < y {
+			return 2, 0, 1
+		} else {
+			return 2, 1, 0
+		}
+	}
+	return 0,1, 2
+}
+
+func (s *SideLengths)GetMaxSortIndex() (uint8, uint8, uint8) {
+	if s[0] >= s[1] && s[0] >= s[2] {
+		if s[1] > s[2] {
+			return 0, 1, 2
+		} else {
+			return 0, 2, 1
+		}
+
+	}
+	if s[1] >=s[2] && s[1] >= s[0] {
+		if s[2] > s[0] {
+			return 1, 2, 0
+		} else {
+			return 1, 0, 2
+		}
+	}
+
+	if s[2] >= s[0] && s[2] >= s[1] {
+		if s[0] > s[1] {
+			return 2, 0, 1
+		} else {
+			return 2, 1, 0
+		}
+	}
+	return 0, 1, 2
 }
 
 func GetMaxSideLength(l,max uint64) uint64 {
@@ -183,13 +238,57 @@ func GetPackSolution(args []string) {
 
 	var in SideLengths
 	in.Init(x1, y1, z1)
-	//idx_in_short := in.GetShortestSideLengthIndex()
-	var MaxBoxSide58 SideLengths
-	MaxBoxSide58.Init(0, 0, 0)
-	MaxBoxSide58.GetMaxSideLengths(x1, y1, z1, 580)
-	for i, v := range MaxBoxSide58 {
+	idx_shortest := in.GetShortestSideLengthIndex()
+	var MaxBoxSides580 SideLengths
+	MaxBoxSides580.Init(0, 0, 0)
+	MaxBoxSides580.GetMaxSideLengths(x1, y1, z1, 580)
+
+	idx580L, idx500W, idx500H:=MaxBoxSides580.GetMaxSortIndex()
+
+	var MaxBoxSides500 SideLengths
+	MaxBoxSides500.Init(0, 0, 0)
+	MaxBoxSides500.GetMaxSideLengths(x1, y1, z1, 500)
+
+	var MaxBoxSides SideLengths
+	MaxBoxSides.Init(MaxBoxSides580[idx580L],MaxBoxSides500[idx500W], MaxBoxSides500[idx500H])
+	for {
+		n:=MaxBoxSides.GetVolume() / in.GetVolume()
+		if n%12==0 || n%8==0 || n%6==0||n%3==0{
+			break
+		}else{
+			switch in.GetShortestSideLengthIndex(){
+			case idx580L: 
+				if MaxBoxSides[0] - in[idx_shortest]>0{
+					MaxBoxSides[0] -= in[idx_shortest]
+				}else{
+					fmt.Println("No solution.")
+					break
+				}	
+			case idx500W: 
+				if MaxBoxSides[1] - in[idx_shortest]>0{
+					MaxBoxSides[1] -= in[idx_shortest]
+				}else{
+					fmt.Println("No solution.")
+					break
+				}
+			case idx500H: 
+				if MaxBoxSides[2] - in[idx_shortest]>0{
+					MaxBoxSides[2] -= in[idx_shortest]
+				}else{
+					fmt.Println("No solution.")
+					break
+				}
+			}
+			  
+		}
+
+	}
+
+	for i, v := range MaxBoxSides {
 		fmt.Printf("max[%d]: %d\n", i, v)
 	}
+
+
 
 	//var x, y, z uint64 = 0, 0, 0
 	//var i uint64 = 0
@@ -450,59 +549,6 @@ func GetPackSolution(args []string) {
 	}*/
 }
 
-func GetMinimumIndex(x, y, z uint64) (uint8, uint8, uint8) {
-	if x <= y && x <= z {
-		if y < z {
-			return 1, 2, 3
-		} else {
-			return 1, 3, 2
-		}
-
-	}
-	if y <= z && y <= x {
-		if z < x {
-			return 2, 1, 3
-		} else {
-			return 2, 3, 1
-		}
-	}
-
-	if z <= x && z <= y {
-		if x < y {
-			return 3, 1, 2
-		} else {
-			return 3, 2, 1
-		}
-	}
-	return 1, 2, 3
-}
-
-func GetMaximumIndex(x, y, z uint64) (uint8, uint8, uint8) {
-	if x >= y && x >= z {
-		if y > z {
-			return 1, 2, 3
-		} else {
-			return 1, 3, 2
-		}
-
-	}
-	if y >= z && y >= x {
-		if z > x {
-			return 2, 3, 1
-		} else {
-			return 2, 1, 3
-		}
-	}
-
-	if z >= x && z >= y {
-		if x > y {
-			return 3, 1, 2
-		} else {
-			return 3, 2, 1
-		}
-	}
-	return 1, 2, 3
-}
 
 /*
 function SelectPackageSide: Select the longest side as the Length of the package
