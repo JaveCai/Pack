@@ -122,31 +122,20 @@ func (s *SideLengths) GetLongestSideLengthIndex() uint8 {
 
 }
 
-func (s *SideLengths) GetMaxSideLengths(l, w, h, maximum uint64) {
-
+func GetMaxSideLength(l,max uint64) uint64 {
 	var i uint64 = 1
-	var L,W,H uint64 = 0,0,0
-	
-	for l * i <= maximum {
+	var L uint64 = 0
+	for l * i <= max {
 		L = l * i
 		i += 1
 	}
-	s[0] = L
+	return L
+}
 
-	i = 1
-	for w * i <= maximum {
-		W = w * i
-		i += 1
-	}
-	s[1] = W
-
-	i = 1
-	for h * i <= maximum {
-		H = h * i
-		i += 1
-	}
-	s[2] = H
-
+func (s *SideLengths) GetMaxSideLengths(l, w, h, maximum uint64) {
+	s[0] = GetMaxSideLength(l,maximum)
+	s[1] = GetMaxSideLength(w,maximum)
+	s[2] = GetMaxSideLength(h,maximum)
 }
 
 func (s *SideLengths) GetVolume() uint64 {
