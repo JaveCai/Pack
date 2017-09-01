@@ -122,27 +122,28 @@ func (s *SideLengths) GetLongestSideLengthIndex() uint8 {
 
 }
 
-func (s *SideLengths) GetMaxSideLengths(L, W, H, maximum uint64) {
+func (s *SideLengths) GetMaxSideLengths(l, w, h, maximum uint64) {
 
 	var i uint64 = 1
-
-	for L <= maximum {
+	var L,W,H uint64 = 0,0,0
+	
+	for l * i <= maximum {
+		L = l * i
 		i += 1
-		L = L * i
 	}
 	s[0] = L
 
 	i = 1
-	for W <= maximum {
+	for w * i <= maximum {
+		W = w * i
 		i += 1
-		W = W * i
 	}
 	s[1] = W
 
 	i = 1
-	for H <= maximum {
+	for h * i <= maximum {
+		H = h * i
 		i += 1
-		H = H * i
 	}
 	s[2] = H
 
@@ -193,7 +194,7 @@ func GetPackSolution(args []string) {
 
 	var in SideLengths
 	in.Init(x1, y1, z1)
-	idx_in_short := in.GetShortestSideLengthIndex()
+	//idx_in_short := in.GetShortestSideLengthIndex()
 	var MaxBoxSide58 SideLengths
 	MaxBoxSide58.Init(0, 0, 0)
 	MaxBoxSide58.GetMaxSideLengths(x1, y1, z1, 580)
@@ -201,20 +202,20 @@ func GetPackSolution(args []string) {
 		fmt.Printf("max[%d]: %d\n", i, v)
 	}
 
-	var x, y, z uint64 = 0, 0, 0
-	var i uint64 = 0
+	//var x, y, z uint64 = 0, 0, 0
+	//var i uint64 = 0
 
-	var maxProductCount uint64 = 0
-	var minPackageCount uint64 = 0xffff
+	//var maxProductCount uint64 = 0
+	//var minPackageCount uint64 = 0xffff
 
 	// Get the Maximum product count theoretically.
-	n := LENGTH * WIDTH * HEIGTH / (x1 * y1 * z1)
+	//n := LENGTH * WIDTH * HEIGTH / (x1 * y1 * z1)
 
-	solutions := make([]*ProductPack, 0)
-	var pc3, pc6, pc8, pc12 ProductPack = ProductPack{3, 0, 0, 0, 0, 0, 0, 0, 0},
+	//solutions := make([]*ProductPack, 0)
+	/*var pc3, pc6, pc8, pc12 ProductPack = ProductPack{3, 0, 0, 0, 0, 0, 0, 0, 0},
 		ProductPack{6, 0, 0, 0, 0, 0, 0, 0, 0},
 		ProductPack{8, 0, 0, 0, 0, 0, 0, 0, 0},
-		ProductPack{12, 0, 0, 0, 0, 0, 0, 0, 0}
+		ProductPack{12, 0, 0, 0, 0, 0, 0, 0, 0}*/
 
 	//for {
 
