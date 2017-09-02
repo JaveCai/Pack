@@ -4,7 +4,7 @@
     length, weight, height of the product
 
 ## Condictions:
-* Maximum of the siez of the box is 50,50,58(cm)
+* Maximum of the size of the box is length 58cm, width 50cm, heigth 50cm
 * n products should be packed in one pokect, g pokects should be packed in one box, n belong to set{3,6,8,12}
 * Try to pack as many as products in one box
 * Try to use as less as pokects in one box
