@@ -23,6 +23,8 @@ const (
 	HEIGTH int64 = 500
 )
 
+const RECURSION_LIMIT int = 12
+
 const (
 	LENGTH_IDX uint8 = 0
 	WIDTH_IDX  uint8 = 1
@@ -182,7 +184,6 @@ func CheckNumberCanBePacked(n int64) (bool, uint8) {
 	}
 }
 
-//for testing
 func GetPackSolutionImp(l, w, h int64) (solution ProductPack) {
 
 	/*----------------------------------------------------------------------*/
@@ -229,10 +230,20 @@ func GetPackSolutionImp(l, w, h int64) (solution ProductPack) {
 		}
 		depth += 1
 		debugLog.Printf("[GetSolution] depth: %d\n", depth)
+		if depth >= RECURSION_LIMIT {
+			return
+		}
 
 		n := ll * ww * hh / in.GetVolume()
 		can, SolutionType := CheckNumberCanBePacked(n)
-		if (can == true && n > solution.ProductCount) || (can == true && n == solution.ProductCount && SolutionType > solution.SolutionType) {
+		//debugLog.Printf("[GetSolution] n: %d\n", n)
+		//debugLog.Printf("[GetSolution] can: %v\n", can)
+		//debugLog.Printf("[GetSolution] solType: %d\n", SolutionType)
+
+		//debugLog.Printf("[solution] n: %d\n", solution.ProductCount)
+		//debugLog.Printf("[solution] solType: %d\n", solution.SolutionType)
+		if (can == true && n > solution.ProductCount) ||
+			(can == true && n == solution.ProductCount && SolutionType > solution.SolutionType) {
 			solution.SolutionType = SolutionType
 			solution.ProductCount = n
 			solution.BoxSides.Init(ll, ww, hh)
@@ -258,10 +269,17 @@ func GetPackSolutionImp(l, w, h int64) (solution ProductPack) {
 
 	/*----------- end define function GetSolution ---------------------*/
 
+	var prevInput [3]int64 = [3]int64{0, 0, 0}
 	for i, mi := range maxInput {
-		debugLog.Printf("[GetSolution] data group input: %d, %d, %d\n", mi[0], mi[1], mi[2])
-		GetSolution(mi[0], mi[1], mi[2], i)
-		//bHaveSolution = false
+		if prevInput[0] == mi[0] && prevInput[1] == mi[1] && prevInput[2] == mi[2] {
+			continue
+		} else {
+			prevInput = mi
+			debugLog.Printf("[GetSolution] data group input: %d, %d, %d\n", mi[0], mi[1], mi[2])
+			GetSolution(mi[0], mi[1], mi[2], i)
+			bHaveSolution = false
+			depth = 0
+		}
 	}
 
 	return solution
