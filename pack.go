@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
-	_ "log"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -186,14 +186,14 @@ func CheckNumberCanBePacked(n int64) (bool, uint8) {
 func GetPackSolutionImp(l, w, h int64) (solution ProductPack) {
 
 	/*----------------------------------------------------------------------*/
-	/*
-		fileName := "pack.log"
-		logFile, err := os.Create(fileName)
-		if err != nil {
-			fmt.Println("Fail to create the log file!")
-		}
-		defer logFile.Close()
-		debugLog := log.New(logFile, "[D]", log.LstdFlags)*/
+
+	fileName := "pack.log"
+	logFile, err := os.Create(fileName)
+	if err != nil {
+		fmt.Println("Fail to create the log file!")
+	}
+	defer logFile.Close()
+	debugLog := log.New(logFile, "[D]", log.Lshortfile /*log.LstdFlags*/)
 	/*----------------------------------------------------------------------*/
 
 	var in SideLengths
@@ -213,21 +213,22 @@ func GetPackSolutionImp(l, w, h int64) (solution ProductPack) {
 
 	maxInput := [3][3]int64{
 		{MaxBoxSides580[0], MaxBoxSides500[1], MaxBoxSides500[2]},
-		{MaxBoxSides580[1], MaxBoxSides500[1], MaxBoxSides500[2]},
-		{MaxBoxSides580[2], MaxBoxSides500[1], MaxBoxSides500[2]},
+		{MaxBoxSides580[1], MaxBoxSides500[2], MaxBoxSides500[0]},
+		{MaxBoxSides580[2], MaxBoxSides500[0], MaxBoxSides500[1]},
 	}
 
 	var bHaveSolution bool = false
 
 	/*----------- start define function GetSolution ---------------------*/
-
+	var depth int = 0
 	var GetSolution func(ll, ww, hh int64, i int)
 
 	GetSolution = func(ll, ww, hh int64, i int) {
 		if ll <= 0 || ww <= 0 || hh <= 0 {
 			return
 		}
-		//debugLog.Printf("[GetSolution] 1\n")
+		depth += 1
+		debugLog.Printf("[GetSolution] depth: %d\n", depth)
 
 		n := ll * ww * hh / in.GetVolume()
 		can, SolutionType := CheckNumberCanBePacked(n)
@@ -236,24 +237,31 @@ func GetPackSolutionImp(l, w, h int64) (solution ProductPack) {
 			solution.ProductCount = n
 			solution.BoxSides.Init(ll, ww, hh)
 			bHaveSolution = true
-			//debugLog.Printf("[GetSolution] 2:   %d %d %d | sol: %d\n", ll, ww, hh, SolutionType)
+			debugLog.Printf("[GetSolution] 2:   %d %d %d | sol: %d\n", ll, ww, hh, SolutionType)
 		} else if bHaveSolution == false { /*recursive call: cut one side and continue to next level */
 
-			//debugLog.Printf("[GetSolution] 3.1: %d - %d\n", ll, in[maxIdx[i][0]])
+			debugLog.Printf("[GetSolution] 3.1: %d - %d, %d, %d\n", ll, in[maxIdx[i][0]], ww, hh)
 			GetSolution(ll-in[maxIdx[i][0]], ww, hh, i)
-			//debugLog.Printf("[GetSolution] 3.2: %d - %d\n", ww, in[maxIdx[i][1]])
+			debugLog.Printf("[GetSolution] 3.2: %d, %d - %d, %d\n", ll, ww, in[maxIdx[i][1]], hh)
 			GetSolution(ll, ww-in[maxIdx[i][1]], hh, i)
-			//debugLog.Printf("[GetSolution] 3.3: %d - %d\n", hh, in[maxIdx[i][2]])
+			debugLog.Printf("[GetSolution] 3.3: %d, %d, %d - %d\n", ll, ww, hh, in[maxIdx[i][2]])
 			GetSolution(ll, ww, hh-in[maxIdx[i][2]], i)
 		} else {
-			/*nothing to do*/
+
+			//1.no solution
+			//2.have solution but not the best
+			debugLog.Printf("[GetSolution] 4: nothing to do\n")
+
 		}
+		depth -= 1
 	}
 
 	/*----------- end define function GetSolution ---------------------*/
 
 	for i, mi := range maxInput {
+		debugLog.Printf("[GetSolution] data group input: %d, %d, %d\n", mi[0], mi[1], mi[2])
 		GetSolution(mi[0], mi[1], mi[2], i)
+		//bHaveSolution = false
 	}
 
 	return solution
