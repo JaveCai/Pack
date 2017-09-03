@@ -1,4 +1,3 @@
-
 package main
 
 import (
@@ -8,20 +7,48 @@ import (
 func TestGetMaxSideLength(t *testing.T) {
 
 	var tests = []struct {
-		l uint64
-		max uint64
-		want uint64
+		l    int64
+		max  int64
+		want int64
 	}{
-		{50,580,550},
-		{70,580,560},
-		{60,500,480},
-		{70,500,490},
+		{50, 580, 550},
+		{70, 580, 560},
+		{60, 500, 480},
+		{70, 500, 490},
 	}
-	
-	for _,test:=range tests{
-		if got := GetMaxSideLength(test.l,test.max); got!=test.want{
+
+	for _, test := range tests {
+		if got := GetMaxSideLength(test.l, test.max); got != test.want {
 			t.Errorf("GetMaxSideLength(%d, %d) = %v", test.l, test.max, got)
 		}
 	}
-	
+
+}
+
+func TestGetPackSolutionImp(t *testing.T) {
+	var tests = []struct {
+		l     int64
+		w     int64
+		h     int64
+		wantL int64
+		wantW int64
+		wantH int64
+	}{
+		{240, 80, 80, 560, 480, 480},
+		{180, 250, 25, 540, 500, 500},
+		{190, 140, 140, 570, 420, 420},
+		{50, 50, 50, 500, 500, 500},
+	}
+
+	for _, test := range tests {
+		l, w, h := test.l, test.w, test.h
+		wantL, wantW, wantH := test.wantL, test.wantW, test.wantH
+		s := GetPackSolutionImp(l, w, h)
+		L := s.BoxSides[0]
+		W := s.BoxSides[1]
+		H := s.BoxSides[2]
+		if L != wantL || W != wantW || H != wantH {
+			t.Errorf("GetPackSolutionImp(%d, %d,%d) => %v %v %v want %v %v %v", l, w, h, L, W, H, wantL, wantW, wantH)
+		}
+	}
 }
