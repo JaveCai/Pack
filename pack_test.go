@@ -52,9 +52,9 @@ func TestGetPackSolutionImp(t *testing.T) {
 		l, w, h := test.l, test.w, test.h
 		wantL, wantW, wantH := test.wantL, test.wantW, test.wantH
 		s := GetPackSolutionImp(l, w, h)
-		L := s.BoxSides[0]
-		W := s.BoxSides[1]
-		H := s.BoxSides[2]
+		L := s.BoxLength
+		W := s.BoxWidth
+		H := s.BoxHeigth
 		if L != wantL || W != wantW || H != wantH {
 			t.Errorf("GetPackSolutionImp(%d, %d,%d) => %v %v %v want %v %v %v", l, w, h, L, W, H, wantL, wantW, wantH)
 		}

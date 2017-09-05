@@ -38,11 +38,13 @@ type ProductPack struct {
 
 	//Package size
 	PackLength int64
-	PackWeigth int64
+	PackWidth int64
 	PackHetght int64
 
 	//Box Size
-	BoxSides SideLengths
+	BoxLength int64
+	BoxWidth int64
+	BoxHeigth int64 
 }
 
 func main() {
@@ -99,12 +101,6 @@ func CheckInputSizeBeyondHalfOfMaximum(l, w, h int64) bool {
 
 type SideLengths [3]int64
 
-func (s *SideLengths) Init(L, W, H int64) {
-	s[0] = L
-	s[1] = W
-	s[2] = H
-}
-
 func (s *SideLengths) GetMaxSideLengths(l, w, h, maximum int64) {
 	s[0] = GetMaxSideLength(l, maximum)
 	s[1] = GetMaxSideLength(w, maximum)
@@ -150,19 +146,23 @@ func GetPackSolution(args []string) {
 	y1 := int64(y0 * 10)
 	z1 := int64(z0 * 10)
 
-	fmt.Printf("%dmm %dmm %dmm\n", x1, y1, z1)
+	//fmt.Printf("%dmm %dmm %dmm\n", x1, y1, z1)
 	if CheckInputSizeValid(x1, y1, z1) == false {
 		fmt.Printf("error: Input size beyond the maximum!\n")
 		return
 	}
 
 	if CheckInputSizeBeyondHalfOfMaximum(x1, y1, z1) == true {
-		fmt.Printf("The size of product beyond the half maximum, you can only pack one product in one box!\n")
+		fmt.Println("It is a special case!!")
+		fmt.Printf("SolutionType\t: %d \n", 1)
+		fmt.Printf("ProductCount\t: %d \n", 1)
+		fmt.Printf("Box Size\t: %.1f  %.1f  %.1f\n", float64(x1)/10, float64(y1)/10, float64(z1)/10)
+		fmt.Printf("Box Volume\t: %.3f\n", float64(x1)/1000*float64(y1)/1000*float64(z1)/1000)
 		return
 	}
 
 	solution := GetPackSolutionImp(x1, y1, z1)
-	l, w, h := solution.BoxSides[0], solution.BoxSides[1], solution.BoxSides[2]
+	l, w, h := solution.BoxLength, solution.BoxWidth, solution.BoxHeigth
 
 	fmt.Printf("SolutionType\t: %d \n", solution.SolutionType)
 	fmt.Printf("ProductCount\t: %d \n", solution.ProductCount)
@@ -197,8 +197,7 @@ func GetPackSolutionImp(l, w, h int64) (solution ProductPack) {
 	debugLog := log.New(logFile, "[D]", log.Lshortfile /*log.LstdFlags*/)
 	/*----------------------------------------------------------------------*/
 
-	var in SideLengths
-	in.Init(l, w, h)
+	var in SideLengths = SideLengths([3]int64{l,w,h})
 
 	var MaxBoxSides580 SideLengths
 	MaxBoxSides580.GetMaxSideLengths(l, w, h, 580)
@@ -246,7 +245,9 @@ func GetPackSolutionImp(l, w, h int64) (solution ProductPack) {
 			(can == true && n == solution.ProductCount && SolutionType > solution.SolutionType) {
 			solution.SolutionType = SolutionType
 			solution.ProductCount = n
-			solution.BoxSides.Init(ll, ww, hh)
+			solution.BoxLength = ll
+			solution.BoxWidth = ww
+			solution.BoxHeigth = hh
 			bHaveSolution = true
 			debugLog.Printf("[GetSolution] 2:   %d %d %d | sol: %d\n", ll, ww, hh, SolutionType)
 		} else if bHaveSolution == false { /*recursive call: cut one side and continue to next level */
