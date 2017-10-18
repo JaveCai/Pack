@@ -1,5 +1,7 @@
 # Pack -- A tool for caculate the pack data
 
+[![Build Status](https://travis-ci.org/JaveCai/Pack.svg?branch=master)](https://travis-ci.org/JaveCai/Pack)
+
 ## Input:
     length, weight, height of the product
 
